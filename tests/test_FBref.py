@@ -247,3 +247,13 @@ def test_combine_big5_player_season_stats(fbref_ligue1: FBref, stat_type: str) -
         ligue1,
         bigfive,
     )
+
+
+
+import soccerdata as sd
+
+# Create scraper class instance
+fbref = sd.FBref(leagues="ITA-Serie A", seasons=2024)
+
+data = fbref.read_player_match_stats(stat_type='summary', match_id=["a88cd10b"], force_cache=False)
+print(data.head())

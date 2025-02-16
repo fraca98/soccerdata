@@ -6,6 +6,7 @@ from functools import reduce
 from pathlib import Path
 from typing import Callable, Optional, Union
 
+import numpy as np
 import pandas as pd
 from lxml import etree, html
 
@@ -1162,6 +1163,18 @@ def _parse_table(html_table: html.HtmlElement) -> pd.DataFrame:
         elem.getparent().remove(elem)
     # parse HTML to dataframe
     (df_table,) = pd.read_html(html.tostring(html_table), flavor="lxml")
+
+    # Extract values for 'data-append-csv' if they exist
+    player_id_parsed = []
+    for elem in html_table.xpath(".//*[@data-append-csv]"):
+        data_value = elem.get("data-append-csv")
+        if data_value:
+            player_id_parsed.append(data_value)
+    if player_id_parsed:
+        player_id = np.full(len(df_table), np.nan, dtype=object)
+        player_id[:len(player_id_parsed)] = player_id_parsed
+        df_table['player_id'] = player_id
+
     return df_table.convert_dtypes()
 
 
